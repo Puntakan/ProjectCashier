@@ -10,7 +10,4 @@ import { RouterLink} from 'vue-router'
 </template>
  
 <style scoped>
-.active {
-    color:chartreuse
-}
 </style>
