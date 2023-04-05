@@ -1,27 +1,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import addEdit from './Cashier.vue'
+import cashierEdit from './Cashier.vue'
 import trash from './icon/Trash.vue'
 import edit from './icon/Edit.vue'
 import { getHistory } from '../composable/getHistory.js'
 
 const historys = ref([])
 
-const currentComponant = ref('histComp')
-const setCurrentComponant = (curComp) => {
-    currentComponant.value = curComp
-    console.log(currentComponant.value)
-}
-
-const editHis = ref(undefined)
-const setEditMode = (history) => {
-    editHis.value = history
-    setCurrentComponant('AddEditComp')
-}
-
 onMounted(async () => {
     historys.value = await getHistory()
 })
+
 
 const deleteHistory = async (deleteId) => {
     try {
@@ -29,13 +18,24 @@ const deleteHistory = async (deleteId) => {
             method: 'DELETE'
         })
         if (res.ok) {
-            historys.value = historys.value.filter((his) => {
-                return his.id !== deleteId
+            historys.value = historys.value.filter((histo) => {
+                return histo.id !== deleteId
             })
         } else throw new error('Error, cannot delete data!')
     } catch (error) {
         console.log(error)
     }
+}
+
+const currentComponant = ref('histComp')
+const setCurrentComponant = (curComp) => {
+    currentComponant.value = curComp
+}
+
+const editHis = ref(undefined)
+const setEditMode = (history) => {
+    editHis.value = history
+    setCurrentComponant('AddEditComp')
 }
 
 const editHistory = async (updatedHistory) => {
@@ -53,29 +53,27 @@ const editHistory = async (updatedHistory) => {
                     customer: updatedHistory.customer,
                     discount: updatedHistory.discount,
                     total: updatedHistory.total
-
                 })
             })
         if (res.status === 200) {
             console.log('update successfully')
-
             const edited = await res.json()
-            historys.value = historys.value.map((list) => {
-                if (list.id === edited.id) {
-                    list.date = edited.date
-                    list.customer = edited.customer
-                    list.discount = edited.discount
-                    list.total = edited.total
-                    list.addList = edited.addList
+            historys.value = historys.value.map((historyList) => {
+                if (historyList.id === edited.id) {
+                    historyList.numList = edited.numList
+                    historyList.dateTime = edited.dateTime
+                    historyList.customer = edited.customer
+                    historyList.discount = edited.discount
+                    historyList.total = edited.total
+                    
                 }
-                return list
+                return historyList
             })
-            console.log(historys)
-
             setCurrentComponant('histComp')
             editHis.value = undefined
-        } else {
-            throw new Error('cannot edit')
+        } 
+        else {
+            throw Error("Oops, sorry can't edit")
         }
     }
     catch (err) {
@@ -84,7 +82,8 @@ const editHistory = async (updatedHistory) => {
 }
 </script>
 <template>
-    <div v-if="currentComponant === 'histComp'" class="h-4/5">
+    <cashierEdit v-if="currentComponant === 'AddEditComp'" :histoList="editHis" @edit="editHistory" />
+    <div v-if="currentComponant === 'histComp'" class="h-5/6">
         <div class="w-full h-16 flex items-center text-2xl font-medium" style="color: #304477;">
             <div class="mx-40">
                 History
@@ -116,7 +115,6 @@ const editHistory = async (updatedHistory) => {
             </div>
         </div>
     </div>
-    <addEdit v-if="currentComponant === 'AddEditComp'" :histoList="editHis" @edit="editHistory" />
 </template>
 
 <style scoped></style>

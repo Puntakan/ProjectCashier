@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted} from 'vue'
+import { ref, onMounted } from 'vue'
 import trash from './icon/Trash.vue'
 
 const emits = defineEmits(['edit'])
@@ -145,10 +145,18 @@ const addNewHistory = async (addHis) => {
             })
             if (res.status === 201) {
                 console.log('add successfully')
-                console.log(updated)
+                updated.value = {
+                    numList: [],
+                    dateTime: "",
+                    customer: "Guest",
+                    subTotal: 0,
+                    discount: 0,
+                    total: 0,
+                    numDis: 0
+                }
             }
             else {
-                throw new Error('cannot add')
+                throw Error("Oops, sorry can't add")
             }
         } catch (err) {
             console.log(err)
@@ -156,17 +164,7 @@ const addNewHistory = async (addHis) => {
     }
 }
 
-const commit = () => {
-    updated.value = {
-        numList: [],
-        dateTime: "",
-        customer: "Guest",
-        subTotal: 0,
-        discount: 0,
-        total: 0,
-        numDis: 0
-    }
-}
+
 
 </script>
  
