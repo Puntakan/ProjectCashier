@@ -69,7 +69,7 @@ const editHistory = async (updatedHistory) => {
             })
             setCurrentComponant('histComp')
             editHis.value = undefined
-        } 
+        }
         else {
             throw Error("Oops, sorry can't edit")
         }
