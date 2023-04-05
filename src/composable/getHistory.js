@@ -7,9 +7,9 @@ const getHistory = async () => {
       } else {
         throw new Error('Error')
       }
-    } catch (error) {
-      console.log(error)
-    }
+  } 
+  catch (error) {
+    console.log(error)
   }
-  
-  export { getHistory }
+}
+export { getHistory }

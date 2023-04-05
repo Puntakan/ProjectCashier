@@ -11,7 +11,6 @@ onMounted(async () => {
     historys.value = await getHistory()
 })
 
-
 const deleteHistory = async (deleteId) => {
     try {
         const res = await fetch(`http://localhost:5000/history/${deleteId}`, {
@@ -65,7 +64,6 @@ const editHistory = async (updatedHistory) => {
                     historyList.customer = edited.customer
                     historyList.discount = edited.discount
                     historyList.total = edited.total
-                    
                 }
                 return historyList
             })
@@ -81,6 +79,7 @@ const editHistory = async (updatedHistory) => {
     }
 }
 </script>
+
 <template>
     <cashierEdit v-if="currentComponant === 'AddEditComp'" :histoList="editHis" @edit="editHistory" />
     <div v-if="currentComponant === 'histComp'" class="h-5/6">

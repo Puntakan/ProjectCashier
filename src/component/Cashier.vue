@@ -23,7 +23,6 @@ onMounted(() => {
             discount: 0,
             total: 0,
             numDis: 0
-
         }
     }
     // Edit mode
@@ -58,7 +57,6 @@ const addNumber = () => {
 
 const deleteItem = (index) => {
     updated.value.numList.splice(index, 1);
-
 }
 
 const subTotal = () => {
@@ -113,7 +111,6 @@ const minus = (discount) => {
         return discount
     }
     else {
-
         return '-' + discount
     }
 }
@@ -127,7 +124,6 @@ const addNewHistory = async (addHis) => {
     updated.value.dateTime = new Date().toLocaleString()
     updated.value.discount = Number(discount())
     updated.value.total = Number(total())
-
     if (updated.value.total !== 0) {
         try {
             const res = await fetch('http://localhost:5000/history', {
@@ -163,9 +159,6 @@ const addNewHistory = async (addHis) => {
         }
     }
 }
-
-
-
 </script>
  
 <template>

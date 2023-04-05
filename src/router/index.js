@@ -8,7 +8,7 @@ const router = createRouter({
         {
             path: '/',
             name: 'CashierPage',
-            component: CashierRouter     
+            component: CashierRouter
         },
         {
             path: '/history',

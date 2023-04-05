@@ -2,11 +2,10 @@
 import NavBar from './component/Nav.vue';
 import { RouterView } from 'vue-router';
 </script>
- 
+
 <template>
     <div class="w-full h-screen bg-white">
         <div class="w-full h-14 bg" style="background: #DFE6F9;">
-
             <div class="flex flex-row w-full h-full">
                 <div class="w-48 h-full font-bold text-xl flex items-center justify-center"
                     style="background-color: #304477; color: #FFC635;">
@@ -18,5 +17,5 @@ import { RouterView } from 'vue-router';
         <RouterView></RouterView>
     </div>
 </template>
- 
+
 <style scoped></style>
