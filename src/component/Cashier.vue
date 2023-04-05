@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted} from 'vue'
 import trash from './icon/Trash.vue'
 
 const emits = defineEmits(['edit'])
@@ -227,11 +227,11 @@ const commit = () => {
 
         <div>
             <div class="flex flex-row justify-end mr-14 mt-5 font-medium text-gray-500">
-                <div class="w-auto flex justify-end items-center ">Sub Total : {{ subTotal() }} ฿</div>
+                <div class="w-auto flex justify-end items-center ">Sub Total : {{ comma(subTotal()) }} ฿</div>
             </div>
 
             <div class="flex flex-row justify-end mr-14 font-medium text-red-600">
-                <div class="w-auto  flex justify-center items-center ">Discount : {{ numDis() }} ฿ </div>
+                <div class="w-auto  flex justify-center items-center ">Discount : {{ minus(comma(numDis())) }} ฿ </div>
             </div>
 
             <div class="flex flex-row justify-end mr-14 font-bold text-xl text-green-700">

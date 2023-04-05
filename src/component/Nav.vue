@@ -4,8 +4,8 @@ import { RouterLink} from 'vue-router'
  
 <template>
 <div>
-<RouterLink :to="{name: 'AddEdit'}">Cashier</RouterLink>
-<RouterLink :to="{name: 'History'}">History</RouterLink>
+<RouterLink :to="{name: 'CashierPage'}">Cashier</RouterLink>
+<RouterLink :to="{name: 'HistoryPage'}">History</RouterLink>
 </div>
 </template>
  
