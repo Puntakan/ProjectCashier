@@ -5,7 +5,7 @@ import trash from './icon/Trash.vue'
 const emits = defineEmits(['edit'])
 
 const props = defineProps({
-    histoList: {
+    history: {
         type: Object,
     }
 })
@@ -14,7 +14,7 @@ const updated = ref({})
 
 onMounted(() => {
     // Add mode 
-    if (props.histoList === undefined) {
+    if (props.history === undefined) {
         updated.value = {
             numList: [],
             dateTime: "",
@@ -22,46 +22,45 @@ onMounted(() => {
             subTotal: 0,
             discount: 0,
             total: 0,
-            numDis: 0
         }
     }
     // Edit mode
     else {
-        updated.value = props.histoList
+        updated.value = props.history
     }
 })
 
-const getDis = (box) => {
-    const subTalValue = updated.value.subTotal
+const getPercentBox = (box) => {
+    const subTotalValue = updated.value.subTotal
     const customerValue = updated.value.customer
     switch (box) {
         case 1:
-            return subTalValue >= 5000 && subTalValue < 10000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
+            return subTotalValue >= 5000 && subTotalValue < 10000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
         case 2:
-            return subTalValue >= 10000 && subTalValue < 20000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
+            return subTotalValue >= 10000 && subTotalValue < 20000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
         case 3:
-            return subTalValue >= 20000 && subTalValue < 30000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
+            return subTotalValue >= 20000 && subTotalValue < 30000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
         case 4:
-            return subTalValue >= 30000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
+            return subTotalValue >= 30000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
         default:
             return 'bg-gray-300'
     }
 }
 
 const numberInput = ref('');
-const addNumber = () => {
+const addNumList = () => {
     updated.value.numList.push(Number(numberInput.value));
     numberInput.value = '';
 
 };
 
-const deleteItem = (index) => {
+const deleteItemList = (index) => {
     updated.value.numList.splice(index, 1);
 }
 
 const subTotal = () => {
-    let subTotal = Number(updated.value.numList?.reduce((acc, curr) => acc + curr, 0))
-    updated.value.subTotal = subTotal
+    let calSubTotal = Number(updated.value.numList?.reduce((acc, curr) => acc + curr, 0))
+    updated.value.subTotal = calSubTotal
     return updated.value.subTotal
 }
 
@@ -83,24 +82,22 @@ const discount = () => {
     return discountPercent
 }
 
-const numDis = () => {
-    const subTotalValue = subTotal()
-    const discountPercent = discount()
-    const discountAmount = subTotalValue * (discountPercent / 100)
+const calDiscount = () => {
+    const discountAmount = subTotal() * (discount() / 100)
     return discountAmount
 }
 
 const total = () => {
-    let numTotal = Number(subTotal() - numDis())
-    updated.value.total = numTotal
+    let calTotal = Number(subTotal() - calDiscount())
+    updated.value.total = calTotal
     return updated.value.total
 }
 
-const customerType = (cus) => {
-    if (cus === 'Guest') {
+const customerType = (type) => {
+    if (type === 'Guest') {
         updated.value.customer = 'Guest'
     }
-    if (cus === "Member") {
+    if (type === "Member") {
         updated.value.customer = "Member"
     }
     console.log(updated.value.customer)
@@ -119,7 +116,7 @@ const comma = (num) => {
     return num.toLocaleString("en")
 }
 
-const addNewHistory = async (addHis) => {
+const addHistory = async (addHis) => {
     console.log(updated.value.numList)
     updated.value.dateTime = new Date().toLocaleString()
     updated.value.discount = Number(discount())
@@ -148,11 +145,10 @@ const addNewHistory = async (addHis) => {
                     subTotal: 0,
                     discount: 0,
                     total: 0,
-                    numDis: 0
                 }
             }
             else {
-                throw Error("Oops, sorry can't add")
+                throw new Error('Oops, sorry cannot add')
             }
         } catch (err) {
             console.log(err)
@@ -175,7 +171,7 @@ const addNewHistory = async (addHis) => {
             <div class="flex flex-row mt-7 justify-center">
                 <input v-model="numberInput" type="number" class="w-10/12 h-10 rounded-lg mr-5 text-black"
                     style="background-color: #FFFFFF;" min="0" @input="numberInput = Math.max($event.target.value, 0)">
-                <button @click='addNumber()' class="w-20 h-10 rounded-lg flex items-center justify-center"
+                <button @click='addNumList()' class="w-20 h-10 rounded-lg flex items-center justify-center"
                     style="background-color: #4263EB; color: #FFFFFF">Add</button>
             </div>
 
@@ -186,7 +182,7 @@ const addNewHistory = async (addHis) => {
                         <div>
                             {{ comma(index + 1) }}. {{ comma(number) }} ฿
                         </div>
-                        <button class="flex items-center ml-auto" @click="deleteItem(index)">
+                        <button class="flex items-center ml-auto" @click="deleteItemList(index)">
                             <trash /> &nbsp; &nbsp;
                         </button>
                     </div>
@@ -209,10 +205,10 @@ const addNewHistory = async (addHis) => {
         <div class="flex flex-col">
             <div class="text-black ml-14 mt-3"> Discount ({{ updated.customer }}) :</div>
             <div class="flex flex-row mt-3 ml-14">
-                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getDis(1)">5%</div>
-                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getDis(2)">10%</div>
-                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getDis(3)">20%</div>
-                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg " :class="getDis(4)">30%</div>
+                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getPercentBox(1)">5%</div>
+                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getPercentBox(2)">10%</div>
+                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getPercentBox(3)">20%</div>
+                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg " :class="getPercentBox(4)">30%</div>
             </div>
         </div>
 
@@ -222,7 +218,7 @@ const addNewHistory = async (addHis) => {
             </div>
 
             <div class="flex flex-row justify-end mr-14 font-medium text-red-600">
-                <div class="w-auto  flex justify-center items-center ">Discount : {{ minus(comma(numDis())) }} ฿ </div>
+                <div class="w-auto  flex justify-center items-center ">Discount : {{ minus(comma(calDiscount())) }} ฿ </div>
             </div>
 
             <div class="flex flex-row justify-end mr-14 font-bold text-xl text-green-700">
@@ -239,7 +235,7 @@ const addNewHistory = async (addHis) => {
 
             <button
                 class="w-20 h-10 flex justify-center items-center bg-blue-700 rounded-lg font-sans text-sm text-white mb-2 mr-14 "
-                @click="addNewHistory(updated)" v-else>
+                @click="addHistory(updated)" v-else>
                 Confirm
             </button>
         </div>

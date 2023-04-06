@@ -17,24 +17,26 @@ const deleteHistory = async (deleteId) => {
             method: 'DELETE'
         })
         if (res.ok) {
-            historys.value = historys.value.filter((histo) => {
-                return histo.id !== deleteId
+            historys.value = historys.value.filter((his) => {
+                return his.id !== deleteId
             })
-        } else throw new error('Error, cannot delete data!')
-    } catch (error) {
+        } 
+        else throw new Error('Oops, sorry cannot delete')
+    } 
+    catch (error) {
         console.log(error)
     }
 }
 
-const currentComponant = ref('histComp')
+const currentComponant = ref('historyComponant')
 const setCurrentComponant = (curComp) => {
     currentComponant.value = curComp
 }
 
 const editHis = ref(undefined)
-const setEditMode = (history) => {
-    editHis.value = history
-    setCurrentComponant('AddEditComp')
+const setEditMode = (hisEdit) => {
+    editHis.value = hisEdit
+    setCurrentComponant('CashierComponent')
 }
 
 const editHistory = async (updatedHistory) => {
@@ -57,21 +59,21 @@ const editHistory = async (updatedHistory) => {
         if (res.status === 200) {
             console.log('update successfully')
             const edited = await res.json()
-            historys.value = historys.value.map((historyList) => {
-                if (historyList.id === edited.id) {
-                    historyList.numList = edited.numList
-                    historyList.dateTime = edited.dateTime
-                    historyList.customer = edited.customer
-                    historyList.discount = edited.discount
-                    historyList.total = edited.total
+            historys.value = historys.value.map((historyValue) => {
+                if (historyValue.id === edited.id) {
+                    historyValue.numList = edited.numList
+                    historyValue.dateTime = edited.dateTime
+                    historyValue.customer = edited.customer
+                    historyValue.discount = edited.discount
+                    historyValue.total = edited.total
                 }
-                return historyList
+                return historyValue
             })
-            setCurrentComponant('histComp')
+            setCurrentComponant('historyComponant')
             editHis.value = undefined
         }
         else {
-            throw Error("Oops, sorry can't edit")
+            throw new Error('Oops, sorry cannot edit')
         }
     }
     catch (err) {
@@ -81,8 +83,8 @@ const editHistory = async (updatedHistory) => {
 </script>
 
 <template>
-    <cashierEdit v-if="currentComponant === 'AddEditComp'" :histoList="editHis" @edit="editHistory" />
-    <div v-if="currentComponant === 'histComp'" class="h-5/6">
+    <cashierEdit v-if="currentComponant === 'CashierComponent'" :history="editHis" @edit="editHistory" />
+    <div v-if="currentComponant === 'historyComponant'" class="h-5/6">
         <div class="w-full h-16 flex items-center text-2xl font-medium" style="color: #304477;">
             <div class="mx-40">
                 History
