@@ -100,7 +100,7 @@ const customerType = (type) => {
     if (type === "Member") {
         updated.value.customer = "Member"
     }
-    console.log(updated.value.customer)
+    // console.log(updated.value.customer)
 }
 
 const minus = (discount) => {
@@ -117,7 +117,7 @@ const comma = (num) => {
 }
 
 const addHistory = async (addHis) => {
-    console.log(updated.value.numList)
+    // console.log(updated.value.numList)
     updated.value.dateTime = new Date().toLocaleString()
     updated.value.discount = Number(discount())
     updated.value.total = Number(total())
@@ -137,7 +137,7 @@ const addHistory = async (addHis) => {
                 })
             })
             if (res.status === 201) {
-                console.log('add successfully')
+                // console.log('add successfully')
                 updated.value = {
                     numList: [],
                     dateTime: "",

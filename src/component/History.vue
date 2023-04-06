@@ -23,8 +23,8 @@ const deleteHistory = async (deleteId) => {
         } 
         else throw new Error('Oops, sorry cannot delete')
     } 
-    catch (error) {
-        console.log(error)
+    catch (err) {
+        console.log(err)
     }
 }
 
@@ -40,7 +40,6 @@ const setEditMode = (hisEdit) => {
 }
 
 const editHistory = async (updatedHistory) => {
-    console.log(updatedHistory)
     try {
         const res = await fetch(`http://localhost:5000/history/${updatedHistory.id}`,
             {
@@ -57,7 +56,7 @@ const editHistory = async (updatedHistory) => {
                 })
             })
         if (res.status === 200) {
-            console.log('update successfully')
+            // console.log('update successfully')
             const edited = await res.json()
             historys.value = historys.value.map((historyValue) => {
                 if (historyValue.id === edited.id) {
