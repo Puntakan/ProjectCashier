@@ -28,15 +28,15 @@ const deleteHistory = async (deleteId) => {
     }
 }
 
-const currentComponant = ref('historyComponant')
-const setCurrentComponant = (curComp) => {
-    currentComponant.value = curComp
+const currentComponent = ref('historyComponent')
+const setCurrentComponent = (curComp) => {
+    currentComponent.value = curComp
 }
 
 const editHis = ref(undefined)
 const setEditMode = (hisEdit) => {
     editHis.value = hisEdit
-    setCurrentComponant('CashierComponent')
+    setCurrentComponent('CashierComponent')
 }
 
 const editHistory = async (updatedHistory) => {
@@ -68,7 +68,7 @@ const editHistory = async (updatedHistory) => {
                 }
                 return historyValue
             })
-            setCurrentComponant('historyComponant')
+            setCurrentComponent('historyComponent')
             editHis.value = undefined
         }
         else {
@@ -82,8 +82,8 @@ const editHistory = async (updatedHistory) => {
 </script>
 
 <template>
-    <cashierEdit v-if="currentComponant === 'CashierComponent'" :history="editHis" @edit="editHistory" />
-    <div v-if="currentComponant === 'historyComponant'" class="h-5/6">
+    <cashierEdit v-if="currentComponent === 'CashierComponent'" :history="editHis" @edit="editHistory" />
+    <div v-if="currentComponent === 'historyComponent'" class="h-5/6">
         <div class="w-full h-16 flex items-center text-2xl font-medium" style="color: #304477;">
             <div class="mx-40">
                 History
