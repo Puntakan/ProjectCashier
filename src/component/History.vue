@@ -57,14 +57,14 @@ const editHistory = async (updatedHistory) => {
             })
         if (res.status === 200) {
             // console.log('update successfully')
-            const edited = await res.json()
+            const changed = await res.json()
             historys.value = historys.value.map((historyValue) => {
-                if (historyValue.id === edited.id) {
-                    historyValue.numList = edited.numList
-                    historyValue.dateTime = edited.dateTime
-                    historyValue.customer = edited.customer
-                    historyValue.discount = edited.discount
-                    historyValue.total = edited.total
+                if (historyValue.id === changed.id) {
+                    historyValue.numList = changed.numList
+                    historyValue.dateTime = changed.dateTime
+                    historyValue.customer = changed.customer
+                    historyValue.discount = changed.discount
+                    historyValue.total = changed.total
                 }
                 return historyValue
             })
