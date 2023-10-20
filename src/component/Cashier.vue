@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import trash from './icon/Trash.vue'
+import editIcon from './icon/Edit.vue';
 
 const emits = defineEmits(['edit'])
 
@@ -155,6 +156,26 @@ const addHistory = async (addHis) => {
         }
     }
 }
+
+const editingIndex = ref(-1);
+
+const editItem = (index) => {
+    const newValue = prompt("Enter the new value"); // แสดง Prompt ให้ผู้ใช้ป้อนค่าใหม่
+
+    // ตรวจสอบว่าผู้ใช้ป้อนค่าใหม่หรือไม่ และตรวจสอบว่าค่าใหม่เป็นตัวเลขหรือไม่
+    if (newValue !== null && !isNaN(newValue)) {
+        updated.value.numList[index] = parseFloat(newValue); // แปลงค่าใหม่เป็นตัวเลขและแก้ไขค่าใน updated.value.numList
+    }
+};
+
+const startEdit = (index) => {
+    editingIndex.value = index; // ตั้งค่า editingIndex เป็นดัชนีของรายการที่จะแก้ไข
+}
+
+const finishEdit = () => {
+    editingIndex.value = -1; // ตั้งค่า editingIndex เป็น -1 เพื่อไม่แสดงช่องป้อนข้อมูล
+};
+
 </script>
  
 <template>
@@ -175,18 +196,35 @@ const addHistory = async (addHis) => {
                     style="background-color: #4263EB; color: #FFFFFF">Add</button>
             </div>
 
-            <div class="w-11/12 h-48 mx-auto mt-6 bg-white  rounded-lg text-black overflow-auto">
+            <div class="w-11/12 h-48 mx-auto mt-6 bg-white rounded-lg text-black overflow-auto">
                 <div class="ml-10" v-if="(updated.numList || []).length > 0"> No </div>
-                <div class="ml-10 mr-10 flex flex-col" v-for="(number, index) in updated.numList" :key="index">
-                    <div class="flex flex-row items-center mb-1">
-                        <div>
+                <div class="ml-10 mr-10">
+                    <div class="flex flex-row items-center mb-1" v-for="(number, index) in updated.numList" :key="index">
+        
+                        <div v-if="editingIndex === index" class="flex items-center w-full">
+                            <input v-model="updated.numList[editingIndex]" type="number"
+                                class="w-full h-6 rounded-lg mr-5 text-black" style="background-color: #e0e0e0;" min="0"
+                                @input="updated.numList[editingIndex] = Math.max($event.target.value, 0)">
+                            <button @click="finishEdit()"
+                                class="w-10 h-6 rounded-lg flex items-center justify-center ml-auto"
+                                style="background-color: #4263EB; color: #FFFFFF; float: right;">Save</button>
+                        </div>
+                        <div v-else class="flex items-center">
                             {{ comma(index + 1) }}. {{ comma(number) }} ฿
                         </div>
-                        <button class="flex items-center ml-auto" @click="deleteItemList(index)">
+                        <hr class="w-12/12">
+                        <button v-if="editingIndex !== index" @click="startEdit(index)"
+                            class="flex items-center justify-end ml-auto">
+                            <editIcon /> &nbsp; &nbsp;
+                        </button>
+                        <button v-if="editingIndex !== index" class="flex items-center" @click="deleteItemList(index)">
                             <trash /> &nbsp; &nbsp;
                         </button>
+                        <button v-if="editingIndex === index && editingIndex !== index" @click="finishEdit()"
+                            class="w-10 h-6 rounded-lg flex items-center justify-center"
+                            style="background-color: #4263EB; color: #FFFFFF">Edit</button>
                     </div>
-                    <hr class="w-12/12">
+                    
                 </div>
             </div>
         </div>
@@ -205,10 +243,14 @@ const addHistory = async (addHis) => {
         <div class="flex flex-col">
             <div class="text-black ml-14 mt-3"> Discount ({{ updated.customer }}) :</div>
             <div class="flex flex-row mt-3 ml-14">
-                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getPercentBox(1)">5%</div>
-                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getPercentBox(2)">10%</div>
-                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getPercentBox(3)">20%</div>
-                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg " :class="getPercentBox(4)">30%</div>
+                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getPercentBox(1)">5%
+                </div>
+                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getPercentBox(2)">
+                    10%</div>
+                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getPercentBox(3)">
+                    20%</div>
+                <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg " :class="getPercentBox(4)">30%
+                </div>
             </div>
         </div>
 
@@ -230,7 +272,7 @@ const addHistory = async (addHis) => {
             <button
                 class="w-20 h-10 flex justify-center items-center bg-red-600 rounded-lg font-sans text-sm text-white mb-2 mr-14"
                 v-if="updated.id" @click="$emit('edit', updated)">
-                Edit
+                Confirm
             </button>
 
             <button
@@ -242,4 +284,5 @@ const addHistory = async (addHis) => {
     </div>
 </template>
  
-<style scoped></style>
+<style scoped>
+</style>
