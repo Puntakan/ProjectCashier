@@ -36,13 +36,13 @@ const getPercentBox = (box) => {
     const customerValue = updated.value.customer
     switch (box) {
         case 1:
-            return subTotalValue >= 5000 && subTotalValue < 10000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
+            return subTotalValue >= 5000 && subTotalValue < 10000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300 text-gray-400'
         case 2:
-            return subTotalValue >= 10000 && subTotalValue < 20000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
+            return subTotalValue >= 10000 && subTotalValue < 20000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300 text-gray-400'
         case 3:
-            return subTotalValue >= 20000 && subTotalValue < 30000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
+            return subTotalValue >= 20000 && subTotalValue < 30000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300 text-gray-400'
         case 4:
-            return subTotalValue >= 30000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300'
+            return subTotalValue >= 30000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300 text-gray-400'
         default:
             return 'bg-gray-300'
     }
@@ -180,26 +180,26 @@ const finishEdit = () => {
  
 <template>
     <!-- Cashier -->
-    <div class="w-full h-16 flex items-center text-2xl font-medium" style="color: #304477;">
+    <div class="Title ">
         <div class="mx-40">
-            Cashier
+            Cashier Calculator
         </div>
     </div>
 
     <!-- input & show -->
-    <div class="w-4/5 h-4/5 mx-auto rounded-3xl " style="background-color: #BEBEBE;">
+    <div class="CalculateBorder">
         <div class="flex flex-col">
+
             <div class="flex flex-row mt-7 justify-center">
                 <input v-model="numberInput" type="number" class="w-10/12 h-10 rounded-lg mr-5 text-black"
                     style="background-color: #FFFFFF;" min="0" @input="numberInput = Math.max($event.target.value, 0)">
-                <button @click='addNumList()' class="w-20 h-10 rounded-lg flex items-center justify-center"
-                    style="background-color: #4263EB; color: #FFFFFF">Add</button>
+                <button @click='addNumList()' class="Button">Add</button>
             </div>
 
             <div class="w-11/12 h-48 mx-auto mt-6 bg-white rounded-lg text-black overflow-auto">
-                <div class="ml-10" v-if="(updated.numList || []).length > 0"> No </div>
-                <div class="ml-10 mr-10">
-                    <div class="flex flex-row items-center mb-1" v-for="(number, index) in updated.numList" :key="index">
+                <div class="ml-10 mt-6 font-bold" v-if="(updated.numList || []).length > 0"> No </div>
+                <div class="ml-10 mr-10 mb-4">
+                    <div class="flex flex-row items-center mb-1 mt-4" v-for="(number, index) in updated.numList" :key="index">
         
                         <div v-if="editingIndex === index" class="flex items-center w-full">
                             <input v-model="updated.numList[editingIndex]" type="number"
@@ -232,11 +232,11 @@ const finishEdit = () => {
         <div class="flex flex-row mt-3 ml-14">
             <div class="text-black">Customer:</div>
             <button class="w-6 h-6 rounded-full border-2 border-white bg-white ml-4 focus:outline-none"
-                :class="{ 'bg-blue-500': updated.customer === 'Guest' }" @click="customerType('Guest')"></button>
+                :class="{ 'bg-orange-400': updated.customer === 'Guest' }" @click="customerType('Guest')"></button>
             <div class="text-black ml-1">Guest</div>
 
             <button class="w-6 h-6 rounded-full border-2 border-white bg-white ml-4 focus:outline-none"
-                :class="{ 'bg-blue-500': updated.customer === 'Member' }" @click="customerType('Member')"></button>
+                :class="{ 'bg-orange-400': updated.customer === 'Member' }" @click="customerType('Member')"></button>
             <div class="text-black ml-1">Member</div>
         </div>
 
@@ -270,13 +270,13 @@ const finishEdit = () => {
 
         <div class="flex justify-end my-3">
             <button
-                class="w-20 h-10 flex justify-center items-center bg-red-600 rounded-lg font-sans text-sm text-white mb-2 mr-14"
+                class="w-20 h-10 flex justify-center items-center bg-red-600 rounded-lg text-sm text-white mb-2 mr-14"
                 v-if="updated.id" @click="$emit('edit', updated)">
                 Confirm
             </button>
 
             <button
-                class="w-20 h-10 flex justify-center items-center bg-blue-700 rounded-lg font-sans text-sm text-white mb-2 mr-14 "
+                class="Button"
                 @click="addHistory(updated)" v-else>
                 Confirm
             </button>
@@ -285,4 +285,39 @@ const finishEdit = () => {
 </template>
  
 <style scoped>
+*{
+    font-family: 'Kanit', sans-serif;
+
+}
+.Title {
+  width: 100%;
+  height: 4rem; /* 4rem เทียบเท่ากับ h-16 */
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem; /* 2rem เทียบเท่ากับ text-2xl */
+  font-weight: 700; /* 500 เทียบเท่ากับ font-medium */
+  color: #ffffff;
+}
+.CalculateBorder {
+  width: 80%; 
+  height: 80%;
+  margin: 0 auto;
+  border-radius: 1.5rem;
+  background-color: rgba(222, 222, 222, 0.6); /* กำหนดสีพื้นหลังโปร่งใส */
+  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px); /* ใช้ backdrop-filter เพื่อให้มี Glass Effect */
+}
+.Button {
+  width: 5rem; /* w-20 เทียบเท่ากับ 5rem */
+  height: 2.5rem; /* h-10 เทียบเท่ากับ 2.5rem */
+  display: flex;
+  justify-content: center; /* justify-center เทียบเท่ากับ justify-content: center; */
+  align-items: center; /* items-center เทียบเท่ากับ align-items: center; */
+  border-radius: 0.5rem; /* rounded-lg เทียบเท่ากับ border-radius: 0.5rem; */
+  font-size: 1rem; /* text-sm เทียบเท่ากับ font-size: 1rem; */
+  color: #fff; /* text-white เทียบเท่ากับ color: #fff; */
+  margin-bottom: 0.5rem; /* mb-2 เทียบเท่ากับ margin-bottom: 0.5rem; */
+  margin-right: 3.5rem; /* mr-14 เทียบเท่ากับ margin-right: 3.5rem; */
+  background-color: #cc7648;
+}
 </style>

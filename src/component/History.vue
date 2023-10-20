@@ -84,15 +84,15 @@ const editHistory = async (updatedHistory) => {
 <template>
     <cashierEdit v-if="currentComponent === 'CashierComponent'" :history="editHis" @edit="editHistory" />
     <div v-if="currentComponent === 'historyComponent'" class="h-5/6">
-        <div class="w-full h-16 flex items-center text-2xl font-medium" style="color: #304477;">
+        <div class="Title mt-6 mb-6">
             <div class="mx-40">
-                History
+                Purchase History
             </div>
         </div>
 
-        <div class="w-4/5 h-4/5 mx-auto rounded-3xl " style="background-color: #BEBEBE;">
+        <div class="Table">
             <div class="h-full overflow-auto">
-                <div class="grid grid-cols-10 gap-2 text-black font-medium text-xl mt-5">
+                <div class="Column">
                     <div class="col-span-1 justify-self-center"></div>
                     <div class="col-span-2 justify-self-center">Date</div>
                     <div class="col-span-2 justify-self-center">Customers</div>
@@ -100,7 +100,7 @@ const editHistory = async (updatedHistory) => {
                     <div class="col-span-2 justify-self-center">Purchase</div>
                     <div class="col-span-1 justify-self-center"></div>
                 </div>
-                <div class="grid grid-cols-10 text-center py-3 rounded-lg" v-for="history in historys">
+                <div class="Rows" v-for="history in historys">
                     <button class="justify-self-center">
                         <trash class="col-span-1 " @click="deleteHistory(history.id)" />
                     </button>
@@ -117,4 +117,54 @@ const editHistory = async (updatedHistory) => {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+*{
+    font-family: 'Kanit', sans-serif;
+
+}
+
+.Title {
+  width: 100%;
+  height: 4rem; /* 4rem เทียบเท่ากับ h-16 */
+  display: flex;
+  align-items: center;
+  font-size: 40px; /* 2rem เทียบเท่ากับ text-2xl */
+  font-weight: 700; /* 500 เทียบเท่ากับ font-medium */
+  color: #ffffff;
+}
+
+.Rows {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  text-align: center;
+  padding: 25px;
+  border: 1px solid #acacac3d;
+  margin: 30px; 
+  border-radius: 15px;
+  box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+}
+.Column {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.5rem;
+  color: #775d26;
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-top: 1.25rem;
+}
+.Table {
+  width: 80%;
+  height: 80%;
+  margin: 0 auto;
+  border: 1px solid #acacac3d;
+  border-radius: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.6); /* กำหนดสีพื้นหลังโปร่งใส */
+  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px); /* ใช้ backdrop-filter เพื่อให้มี Glass Effect */
+}
+
+
+</style>

@@ -4,18 +4,63 @@ import { RouterView } from 'vue-router';
 </script>
 
 <template>
-    <div class="w-full h-screen bg-white">
-        <div class="w-full h-14 bg" style="background: #DFE6F9;">
+    <div class="Background w-full h-screen">
+
+        <div class="NavBarStyle">
             <div class="flex flex-row w-full h-full">
-                <div class="w-48 h-full font-bold text-xl flex items-center justify-center"
-                    style="background-color: #304477; color: #FFC635;">
-                    203 Store
+
+                <div class="FreshMart">FreshMart
+                    <img src="./component/icon/orange.png" class="FreshMartIcon">
                 </div>
-                <NavBar class="w-40 h-full flex items-center justify-center font-sans text-lg text-black ml-14 space-x-16" />
+
+                <NavBar class= "ContentInNavbar space-x-16"/>
             </div>
         </div>
         <RouterView></RouterView>
+
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+*{
+    font-family: 'Kanit', sans-serif;
+
+}
+.NavBarStyle{
+    width: 100%;
+    height: 3.5rem;
+    background-color: rgba(255, 255, 255, 0.6); /* กำหนดสีพื้นหลังโปร่งใส */
+    backdrop-filter: blur(10px); /* ใช้ backdrop-filter เพื่อให้มี Glass Effect */
+    box-shadow: 0px 7px 10px rgba(0, 0, 0, 0.1);
+
+    color: #cc7648;
+}
+.FreshMart{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 250px;
+    height: 100%;
+    font-weight: 700;
+    font-size: 35px;
+    padding: 0 30px 0px 30px;
+}
+.FreshMartIcon{
+    width: 40px;
+    display: flex;
+    padding: 5px;
+}
+.ContentInNavbar {
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-left: 40px;
+}
+.Background{
+    background-image: url(../src/component/wallpaper/5892969.jpg);
+    background-size: cover;
+}
+</style>
