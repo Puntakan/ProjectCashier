@@ -21,18 +21,22 @@ onMounted(() => {
         updated.value = {
             numList: [],  // กำหนด numList เป็นอาร์เรย์เปล่า
             dateTime: "",
-            customer: "Guest",
+            customerType: "Guest", // ตั้งค่าเริ่มต้นเป็น Guest
             subTotal: 0,
-            discount: 0,
+            discount: 0, // ตั้งค่าเริ่มต้นเป็น 0
             total: 0,
         }
     }
     // Edit mode
     else {
-        // เปลี่ยนประเภทของ numList จาก String เป็นอาร์เรย์ของจำนวนเต็ม
-        updated.value = props.history;
-        updated.value.numList = JSON.parse(updated.value.numList);
-    }
+    // เปลี่ยนประเภทของ numList จาก String เป็นอาร์เรย์ของจำนวนเต็ม
+    updated.value = props.history;
+    updated.value.numList = JSON.parse(updated.value.numList);
+
+
+    console.log(props)
+    console.log(emits)
+}
 })
 
 const addedNumList = ref([]);
@@ -40,7 +44,7 @@ const addedNumList = ref([]);
 
 const getPercentBox = (box) => {
     const subTotalValue = updated.value.subTotal
-    const customerValue = updated.value.customer
+    const customerValue = updated.value.customerType
     switch (box) {
         case 1:
             return subTotalValue >= 5000 && subTotalValue < 10000 && customerValue === 'Member' ? 'bg-green-500 text-black' : 'bg-gray-300 text-gray-400'
@@ -90,7 +94,7 @@ const subTotal = () => {
 }
 
 const discount = () => {
-    const customerValue = updated.value.customer
+    const customerValue = updated.value.customerType
     let discountPercent = 0
     if (customerValue === 'Member') {
         if (subTotal() >= 5000 && subTotal() < 10000) {
@@ -120,10 +124,10 @@ const total = () => {
 
 const customerType = (type) => {
     if (type === 'Guest') {
-        updated.value.customer = 'Guest'
+        updated.value.customerType = 'Guest'
     }
     if (type === "Member") {
-        updated.value.customer = "Member"
+        updated.value.customerType = "Member"
     }
 }
 
@@ -145,11 +149,11 @@ const calculateSubTotalAndSendToBackend = async () => {
 
     const sendData = {
         numList: updated.value.numList,
-        customerType: updated.value.customer,
+        customerType: updated.value.customerType,
         discount: discount(),
         total: total()
     };
-    
+
     sendData.numList = JSON.stringify(sendData.numList);
 
     console.log(sendData);
@@ -169,7 +173,7 @@ const calculateSubTotalAndSendToBackend = async () => {
             updated.value = {
                 numList: [],
                 dateTime: "",
-                customer: "Guest",
+                customerType: "Guest",
                 subTotal: 0,
                 discount: 0,
                 total: 0,
@@ -193,10 +197,6 @@ const startEdit = (index) => {
 const finishEdit = () => {
     editingIndex.value = -1;
 };
-
-const resetNumList = () => {
-    updated.value.numList = [];
-}
 
 </script>
  
@@ -254,16 +254,16 @@ const resetNumList = () => {
         <div class="flex flex-row mt-3 ml-14">
             <div class="text-black">Customer:</div>
             <button class="w-6 h-6 rounded-full border-2 border-white bg-white ml-4 focus:outline-none"
-                :class="{ 'bg-orange-400': updated.customer === 'Guest' }" @click="customerType('Guest')"></button>
+                :class="{ 'bg-orange-400': updated.customerType === 'Guest' }" @click="customerType('Guest')"></button>
             <div class="text-black ml-1">Guest</div>
 
             <button class="w-6 h-6 rounded-full border-2 border-white bg-white ml-4 focus:outline-none"
-                :class="{ 'bg-orange-400': updated.customer === 'Member' }" @click="customerType('Member')"></button>
+                :class="{ 'bg-orange-400': updated.customerType === 'Member' }" @click="customerType('Member')"></button>
             <div class="text-black ml-1">Member</div>
         </div>
 
         <div class="flex flex-col">
-            <div class="text-black ml-14 mt-3"> Discount ({{ updated.customer }}) :</div>
+            <div class="text-black ml-14 mt-3"> Discount ({{ updated.customerType }}) :</div>
             <div class="flex flex-row mt-3 ml-14">
                 <div class="w-20 h-11 flex justify-center items-center rounded-lg text-lg mr-2" :class="getPercentBox(1)">5%
                 </div>
@@ -355,4 +355,5 @@ const resetNumList = () => {
     margin-right: 3.5rem;
     /* mr-14 เทียบเท่ากับ margin-right: 3.5rem; */
     background-color: #cc7648;
-}</style>
+}
+</style>

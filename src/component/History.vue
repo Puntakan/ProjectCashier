@@ -20,9 +20,9 @@ const deleteHistory = async (deleteId) => {
             historys.value = historys.value.filter((his) => {
                 return his.id !== deleteId
             })
-        } 
+        }
         else throw new Error('Oops, sorry cannot delete')
-    } 
+    }
     catch (err) {
         console.log(err)
     }
@@ -36,63 +36,71 @@ const setCurrentComponent = (curComp) => {
 const editHis = ref(undefined)
 const setEditMode = (hisEdit) => {
     editHis.value = hisEdit
-    
+
     setCurrentComponent('CashierComponent')
 }
 
 const editHistory = async (updatedHistory) => {
+    
+
+    console.log('Customer Type:', updatedHistory.customerType);
+    
+    // ตรวจสอบว่า updatedHistory.numList เป็น array หรือไม่
+    if (Array.isArray(updatedHistory.numList)) {
+        // แปลง updatedHistory.numList เป็น JSON string
+        updatedHistory.numList = JSON.stringify(updatedHistory.numList);
+    }
+
     try {
-        const res = await fetch(`http://localhost:8080/api/history/${updatedHistory.id}`,
-            {
-                method: 'PUT',
-                headers: {
-                    'content-type': 'application/json'
-                },
-              
-                body: JSON.stringify({
-                    numList: JSON.parse(updatedHistory.numList),
-                    dateTime: updatedHistory.dateTime,
-                    customerType: updatedHistory.customerType,
-                    discount: updatedHistory.discount,
-                    total: updatedHistory.total
-                })
+        const res = await fetch(`http://localhost:8080/api/history/${updatedHistory.id}`, {
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                numList: updatedHistory.numList,
+                customerType: updatedHistory.customerType,
+                discount: updatedHistory.discount,
+                total: updatedHistory.total
             })
+        });
+
         if (res.status === 200) {
-            // console.log('update successfully')
-            const changed = await res.json()
+            const changed = await res.json();
+            console.log(changed);
+
             historys.value = historys.value.map((historyValue) => {
                 if (historyValue.id === changed.id) {
-                    historyValue.numList = changed.numList
-                    historyValue.dateTime = changed.dateTime
-                    historyValue.customerType = changed.customerType
-                    historyValue.discount = changed.discount
-                    historyValue.total = changed.total
+                    historyValue.numList = changed.numList;
+                    historyValue.dateTime = changed.dateTime;
+                    historyValue.customerType = changed.customerType;
+                    historyValue.discount = changed.discount;
+                    historyValue.total = changed.total;
                 }
-                return historyValue
-            })
-            setCurrentComponent('historyComponent')
-            editHis.value = undefined
+                return historyValue;
+            });
+
+            setCurrentComponent('historyComponent');
+            editHis.value = undefined;
+        } else {
+            throw new Error('Oops, sorry cannot edit');
         }
-        else {
-            throw new Error('Oops, sorry cannot edit')
-        }
-    }
-    catch (err) {
-        console.log(err)
+    } catch (err) {
+        console.log(err);
     }
 }
 
 const formatDateTime = (dateTimeString) => {
-  const options = {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  };
-  const date = new Date(dateTimeString);
-  return date.toLocaleString('en-US', options).replace(',', '') + ' ' + (date.getHours() < 12 ? 'AM' : 'PM');
+    const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    };
+    const date = new Date(dateTimeString);
+    return date.toLocaleString('en-US', options).replace(',', '') + ' ' + (date.getHours() < 12 ? 'AM' : 'PM');
 }
 
 </script>
@@ -134,53 +142,56 @@ const formatDateTime = (dateTimeString) => {
 </template>
 
 <style scoped>
-
-*{
+* {
     font-family: 'Kanit', sans-serif;
 
 }
 
 .Title {
-  width: 100%;
-  height: 4rem; /* 4rem เทียบเท่ากับ h-16 */
-  display: flex;
-  align-items: center;
-  font-size: 40px; /* 2rem เทียบเท่ากับ text-2xl */
-  font-weight: 700; /* 500 เทียบเท่ากับ font-medium */
-  color: #ffffff;
+    width: 100%;
+    height: 4rem;
+    /* 4rem เทียบเท่ากับ h-16 */
+    display: flex;
+    align-items: center;
+    font-size: 40px;
+    /* 2rem เทียบเท่ากับ text-2xl */
+    font-weight: 700;
+    /* 500 เทียบเท่ากับ font-medium */
+    color: #ffffff;
 }
 
 .Rows {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  text-align: center;
-  padding: 25px;
-  border: 1px solid #acacac3d;
-  margin: 30px; 
-  border-radius: 15px;
-  box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.1);
-  background-color: rgba(255, 255, 255, 0.9);
-  font-weight: 400;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    text-align: center;
+    padding: 25px;
+    border: 1px solid #acacac3d;
+    margin: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
 }
+
 .Column {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 0.5rem;
-  color: #775d26;
-  font-weight: 700;
-  font-size: 1.25rem;
-  margin-top: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 0.5rem;
+    color: #775d26;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-top: 1.25rem;
 }
+
 .Table {
-  width: 80%;
-  height: 80%;
-  margin: 0 auto;
-  border: 1px solid #acacac3d;
-  border-radius: 1.5rem;
-  background-color: rgba(255, 255, 255, 0.6); /* กำหนดสีพื้นหลังโปร่งใส */
-  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px); /* ใช้ backdrop-filter เพื่อให้มี Glass Effect */
-}
-
-
-</style>
+    width: 80%;
+    height: 80%;
+    margin: 0 auto;
+    border: 1px solid #acacac3d;
+    border-radius: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.6);
+    /* กำหนดสีพื้นหลังโปร่งใส */
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    /* ใช้ backdrop-filter เพื่อให้มี Glass Effect */
+}</style>
