@@ -13,7 +13,7 @@ onMounted(async () => {
 
 const deleteHistory = async (deleteId) => {
     try {
-        const res = await fetch(`http://localhost:5000/history/${deleteId}`, {
+        const res = await fetch(`http://localhost:8080/api/history/${deleteId}`, {
             method: 'DELETE'
         })
         if (res.ok) {
@@ -36,21 +36,23 @@ const setCurrentComponent = (curComp) => {
 const editHis = ref(undefined)
 const setEditMode = (hisEdit) => {
     editHis.value = hisEdit
+    
     setCurrentComponent('CashierComponent')
 }
 
 const editHistory = async (updatedHistory) => {
     try {
-        const res = await fetch(`http://localhost:5000/history/${updatedHistory.id}`,
+        const res = await fetch(`http://localhost:8080/api/history/${updatedHistory.id}`,
             {
                 method: 'PUT',
                 headers: {
                     'content-type': 'application/json'
                 },
+              
                 body: JSON.stringify({
-                    numList: updatedHistory.numList,
+                    numList: JSON.parse(updatedHistory.numList),
                     dateTime: updatedHistory.dateTime,
-                    customer: updatedHistory.customer,
+                    customerType: updatedHistory.customerType,
                     discount: updatedHistory.discount,
                     total: updatedHistory.total
                 })
@@ -62,7 +64,7 @@ const editHistory = async (updatedHistory) => {
                 if (historyValue.id === changed.id) {
                     historyValue.numList = changed.numList
                     historyValue.dateTime = changed.dateTime
-                    historyValue.customer = changed.customer
+                    historyValue.customerType = changed.customerType
                     historyValue.discount = changed.discount
                     historyValue.total = changed.total
                 }
@@ -79,6 +81,20 @@ const editHistory = async (updatedHistory) => {
         console.log(err)
     }
 }
+
+const formatDateTime = (dateTimeString) => {
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  };
+  const date = new Date(dateTimeString);
+  return date.toLocaleString('en-US', options).replace(',', '') + ' ' + (date.getHours() < 12 ? 'AM' : 'PM');
+}
+
 </script>
 
 <template>
@@ -104,8 +120,8 @@ const editHistory = async (updatedHistory) => {
                     <button class="justify-self-center">
                         <trash class="col-span-1 " @click="deleteHistory(history.id)" />
                     </button>
-                    <div class="col-span-2 justify-self-center text-black">{{ history.dateTime }}</div>
-                    <div class="col-span-2 justify-self-center text-black">{{ history.customer }}</div>
+                    <div class="col-span-2 justify-self-center text-black">{{ formatDateTime(history.dateTime) }}</div>
+                    <div class="col-span-2 justify-self-center text-black">{{ history.customerType }}</div>
                     <div class="col-span-2 justify-self-center text-red-600">{{ history.discount }} %</div>
                     <div class="col-span-2 justify-self-center text-black">{{ history.total }}</div>
                     <button class="justify-self-center">

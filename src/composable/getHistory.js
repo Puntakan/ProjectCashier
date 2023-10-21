@@ -1,6 +1,6 @@
 const getHistory = async () => {
   try {
-    const res = await fetch('http://localhost:5000/history')
+    const res = await fetch('http://localhost:8080/api/history')
     if (res.ok) {
       const historys = await res.json()
       return historys

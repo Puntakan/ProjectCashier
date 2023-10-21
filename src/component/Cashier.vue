@@ -5,6 +5,8 @@ import editIcon from './icon/Edit.vue';
 
 const emits = defineEmits(['edit'])
 
+
+
 const props = defineProps({
     history: {
         type: Object,
@@ -17,7 +19,7 @@ onMounted(() => {
     // Add mode 
     if (props.history === undefined) {
         updated.value = {
-            numList: [],
+            numList: [],  // กำหนด numList เป็นอาร์เรย์เปล่า
             dateTime: "",
             customer: "Guest",
             subTotal: 0,
@@ -27,9 +29,14 @@ onMounted(() => {
     }
     // Edit mode
     else {
-        updated.value = props.history
+        // เปลี่ยนประเภทของ numList จาก String เป็นอาร์เรย์ของจำนวนเต็ม
+        updated.value = props.history;
+        updated.value.numList = JSON.parse(updated.value.numList);
     }
 })
+
+const addedNumList = ref([]);
+
 
 const getPercentBox = (box) => {
     const subTotalValue = updated.value.subTotal
@@ -53,6 +60,9 @@ const addNumList = () => {
     updated.value.numList.push(Number(numberInput.value));
     numberInput.value = '';
 
+    addedNumList.value.push(updated.value.numList);
+
+
 };
 
 const deleteItemList = (index) => {
@@ -60,9 +70,23 @@ const deleteItemList = (index) => {
 }
 
 const subTotal = () => {
-    let calSubTotal = Number(updated.value.numList?.reduce((acc, curr) => acc + curr, 0))
-    updated.value.subTotal = calSubTotal
-    return updated.value.subTotal
+    let numList = updated.value.numList || []; // Initialize as an empty array if numList is undefined
+    if (!Array.isArray(numList)) {
+        // If numList is not an array, try to convert it to an array
+        try {
+            numList = JSON.parse(numList);
+        } catch (error) {
+            console.error("Error parsing numList:", error);
+            numList = [];
+        }
+    }
+
+    // Now numList is guaranteed to be an array
+    let calSubTotal = numList.reduce((acc, curr) => acc + (+curr), 0);
+    updated.value.subTotal = calSubTotal;
+
+    return updated.value.subTotal;
+
 }
 
 const discount = () => {
@@ -101,7 +125,6 @@ const customerType = (type) => {
     if (type === "Member") {
         updated.value.customer = "Member"
     }
-    // console.log(updated.value.customer)
 }
 
 const minus = (discount) => {
@@ -117,64 +140,63 @@ const comma = (num) => {
     return num.toLocaleString("en")
 }
 
-const addHistory = async (addHis) => {
-    // console.log(updated.value.numList)
-    updated.value.dateTime = new Date().toLocaleString()
-    updated.value.discount = Number(discount())
-    updated.value.total = Number(total())
-    if (updated.value.total !== 0) {
-        try {
-            const res = await fetch('http://localhost:5000/history', {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify({
-                    numList: addHis.numList,
-                    dateTime: addHis.dateTime,
-                    customer: addHis.customer,
-                    discount: addHis.discount,
-                    total: addHis.total
-                })
-            })
-            if (res.status === 201) {
-                // console.log('add successfully')
-                updated.value = {
-                    numList: [],
-                    dateTime: "",
-                    customer: "Guest",
-                    subTotal: 0,
-                    discount: 0,
-                    total: 0,
-                }
-            }
-            else {
-                throw new Error('Oops, sorry cannot add')
-            }
-        } catch (err) {
-            console.log(err)
+
+const calculateSubTotalAndSendToBackend = async () => {
+
+    const sendData = {
+        numList: updated.value.numList,
+        customerType: updated.value.customer,
+        discount: discount(),
+        total: total()
+    };
+    
+    sendData.numList = JSON.stringify(sendData.numList);
+
+    console.log(sendData);
+
+    try {
+        const res = await fetch('http://localhost:8080/api/history', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(sendData)
+        });
+        if (res.status === 201) {
+            // Data sent successfully
+            console.log('Add successfully');
+            // Reset the data after sending
+            updated.value = {
+                numList: [],
+                dateTime: "",
+                customer: "Guest",
+                subTotal: 0,
+                discount: 0,
+                total: 0,
+            };
+            addedNumList.value = []; // เคลียร์ addedNumList ให้ว่าง
+        } else {
+            throw Error('Oops, sorry cannot add');
         }
+    } catch (err) {
+        console.error(err);
     }
-}
+};
+
 
 const editingIndex = ref(-1);
 
-const editItem = (index) => {
-    const newValue = prompt("Enter the new value"); // แสดง Prompt ให้ผู้ใช้ป้อนค่าใหม่
-
-    // ตรวจสอบว่าผู้ใช้ป้อนค่าใหม่หรือไม่ และตรวจสอบว่าค่าใหม่เป็นตัวเลขหรือไม่
-    if (newValue !== null && !isNaN(newValue)) {
-        updated.value.numList[index] = parseFloat(newValue); // แปลงค่าใหม่เป็นตัวเลขและแก้ไขค่าใน updated.value.numList
-    }
-};
-
 const startEdit = (index) => {
-    editingIndex.value = index; // ตั้งค่า editingIndex เป็นดัชนีของรายการที่จะแก้ไข
+    editingIndex.value = index;
 }
 
 const finishEdit = () => {
-    editingIndex.value = -1; // ตั้งค่า editingIndex เป็น -1 เพื่อไม่แสดงช่องป้อนข้อมูล
+    editingIndex.value = -1;
 };
+
+const resetNumList = () => {
+    updated.value.numList = [];
+}
 
 </script>
  
@@ -199,8 +221,9 @@ const finishEdit = () => {
             <div class="w-11/12 h-48 mx-auto mt-6 bg-white rounded-lg text-black overflow-auto">
                 <div class="ml-10 mt-6 font-bold" v-if="(updated.numList || []).length > 0"> No </div>
                 <div class="ml-10 mr-10 mb-4">
-                    <div class="flex flex-row items-center mb-1 mt-4" v-for="(number, index) in updated.numList" :key="index">
-        
+                    <div class="flex flex-row items-center mb-1 mt-4" v-for="(number, index) in updated.numList"
+                        :key="index">
+
                         <div v-if="editingIndex === index" class="flex items-center w-full">
                             <input v-model="updated.numList[editingIndex]" type="number"
                                 class="w-full h-6 rounded-lg mr-5 text-black" style="background-color: #e0e0e0;" min="0"
@@ -224,7 +247,6 @@ const finishEdit = () => {
                             class="w-10 h-6 rounded-lg flex items-center justify-center"
                             style="background-color: #4263EB; color: #FFFFFF">Edit</button>
                     </div>
-                    
                 </div>
             </div>
         </div>
@@ -269,15 +291,12 @@ const finishEdit = () => {
         </div>
 
         <div class="flex justify-end my-3">
-            <button
-                class="w-20 h-10 flex justify-center items-center bg-red-600 rounded-lg text-sm text-white mb-2 mr-14"
+            <button class="w-20 h-10 flex justify-center items-center bg-red-600 rounded-lg text-sm text-white mb-2 mr-14"
                 v-if="updated.id" @click="$emit('edit', updated)">
                 Confirm
             </button>
 
-            <button
-                class="Button"
-                @click="addHistory(updated)" v-else>
+            <button class="Button" @click="calculateSubTotalAndSendToBackend(updated)" v-else>
                 Confirm
             </button>
         </div>
@@ -285,39 +304,55 @@ const finishEdit = () => {
 </template>
  
 <style scoped>
-*{
+* {
     font-family: 'Kanit', sans-serif;
 
 }
+
 .Title {
-  width: 100%;
-  height: 4rem; /* 4rem เทียบเท่ากับ h-16 */
-  display: flex;
-  align-items: center;
-  font-size: 1.5rem; /* 2rem เทียบเท่ากับ text-2xl */
-  font-weight: 700; /* 500 เทียบเท่ากับ font-medium */
-  color: #ffffff;
+    width: 100%;
+    height: 4rem;
+    /* 4rem เทียบเท่ากับ h-16 */
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    /* 2rem เทียบเท่ากับ text-2xl */
+    font-weight: 700;
+    /* 500 เทียบเท่ากับ font-medium */
+    color: #ffffff;
 }
+
 .CalculateBorder {
-  width: 80%; 
-  height: 80%;
-  margin: 0 auto;
-  border-radius: 1.5rem;
-  background-color: rgba(222, 222, 222, 0.6); /* กำหนดสีพื้นหลังโปร่งใส */
-  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px); /* ใช้ backdrop-filter เพื่อให้มี Glass Effect */
+    width: 80%;
+    height: 80%;
+    margin: 0 auto;
+    border-radius: 1.5rem;
+    background-color: rgba(222, 222, 222, 0.6);
+    /* กำหนดสีพื้นหลังโปร่งใส */
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    /* ใช้ backdrop-filter เพื่อให้มี Glass Effect */
 }
+
 .Button {
-  width: 5rem; /* w-20 เทียบเท่ากับ 5rem */
-  height: 2.5rem; /* h-10 เทียบเท่ากับ 2.5rem */
-  display: flex;
-  justify-content: center; /* justify-center เทียบเท่ากับ justify-content: center; */
-  align-items: center; /* items-center เทียบเท่ากับ align-items: center; */
-  border-radius: 0.5rem; /* rounded-lg เทียบเท่ากับ border-radius: 0.5rem; */
-  font-size: 1rem; /* text-sm เทียบเท่ากับ font-size: 1rem; */
-  color: #fff; /* text-white เทียบเท่ากับ color: #fff; */
-  margin-bottom: 0.5rem; /* mb-2 เทียบเท่ากับ margin-bottom: 0.5rem; */
-  margin-right: 3.5rem; /* mr-14 เทียบเท่ากับ margin-right: 3.5rem; */
-  background-color: #cc7648;
-}
-</style>
+    width: 5rem;
+    /* w-20 เทียบเท่ากับ 5rem */
+    height: 2.5rem;
+    /* h-10 เทียบเท่ากับ 2.5rem */
+    display: flex;
+    justify-content: center;
+    /* justify-center เทียบเท่ากับ justify-content: center; */
+    align-items: center;
+    /* items-center เทียบเท่ากับ align-items: center; */
+    border-radius: 0.5rem;
+    /* rounded-lg เทียบเท่ากับ border-radius: 0.5rem; */
+    font-size: 1rem;
+    /* text-sm เทียบเท่ากับ font-size: 1rem; */
+    color: #fff;
+    /* text-white เทียบเท่ากับ color: #fff; */
+    margin-bottom: 0.5rem;
+    /* mb-2 เทียบเท่ากับ margin-bottom: 0.5rem; */
+    margin-right: 3.5rem;
+    /* mr-14 เทียบเท่ากับ margin-right: 3.5rem; */
+    background-color: #cc7648;
+}</style>

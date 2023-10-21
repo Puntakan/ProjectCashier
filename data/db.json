@@ -227,6 +227,28 @@
       "discount": 0,
       "total": 452,
       "id": 22
+    },
+    {
+      "numList": [
+        200,
+        400
+      ],
+      "dateTime": "10/20/2023, 4:52:12 PM",
+      "customer": "Guest",
+      "discount": 0,
+      "total": 600,
+      "id": 23
+    },
+    {
+      "numList": [
+        300,
+        100
+      ],
+      "dateTime": "10/20/2023, 4:53:38 PM",
+      "customer": "Guest",
+      "discount": 0,
+      "total": 400,
+      "id": 24
     }
   ]
 }
