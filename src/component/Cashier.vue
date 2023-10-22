@@ -18,7 +18,7 @@ const updated = ref({})
 onMounted(() => {
     if (props.history === undefined) {
         updated.value = {
-            numList: [],  
+            numList: [],
             dateTime: "",
             customerType: "Guest",
             subTotal: 0,
@@ -27,10 +27,10 @@ onMounted(() => {
         }
     }
     else {
-    updated.value = props.history;
-    updated.value.numList = JSON.parse(updated.value.numList);
-    console.log(props)
-}
+        updated.value = props.history;
+        updated.value.numList = JSON.parse(updated.value.numList);
+        console.log(props)
+    }
 })
 
 const addedNumList = ref([]);
@@ -68,7 +68,7 @@ const deleteItemList = (index) => {
 }
 
 const subTotal = () => {
-    let numList = updated.value.numList || []; 
+    let numList = updated.value.numList || [];
     if (!Array.isArray(numList)) {
         try {
             numList = JSON.parse(numList);
@@ -168,7 +168,7 @@ const calculateSubTotalAndSendToBackend = async () => {
                 discount: 0,
                 total: 0,
             };
-            addedNumList.value = []; 
+            addedNumList.value = [];
         } else {
             throw Error('Oops, sorry cannot add');
         }
@@ -278,7 +278,7 @@ const finishEdit = () => {
             </div>
         </div>
 
-        <div class="flex justify-end my-3">
+        <div class="flex justify-end my-1 ">
             <button class="w-20 h-10 flex justify-center items-center bg-red-600 rounded-lg text-sm text-white mb-2 mr-14"
                 v-if="updated.id" @click="$emit('edit', updated)">
                 Confirm
